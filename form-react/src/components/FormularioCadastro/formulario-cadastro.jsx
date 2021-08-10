@@ -1,85 +1,96 @@
-import React, {useState} from "react";
-import {
-  Button,
-  TextField,
-  Switch,
-  FormControlLabel,
-  } from "@material-ui/core";
+import React, { useState } from "react";
+import { Button, TextField, Switch, FormControlLabel } from "@material-ui/core";
 
-function FormularioCadastro() {
-    const [nome, setNome] =useState("");
-    const [sobrenome, setSobrenome] =useState("")
-    const [cpf,setCpf] =useState("")
-    
+function FormularioCadastro({aoEnviar, validarCPF}) {
+  const [nome, setNome] = useState("");
+  const [sobrenome, setSobrenome] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [promocoes, setPromocoes] = useState(true);
+  const [newsletter, setNewsletter] = useState(false);
+  const [erros, setErros] = useState({cpf:{valido:true, texto:""}})
 
   return (
-    <>
-      <form
-        onSubmit={(event) => {
-            event.preventDefault();
-            console.log (nome, sobrenome, cpf)
+    <form
+    onSubmit={(event) => {
+        event.preventDefault();
+        aoEnviar({nome, sobrenome, cpf, newsletter, promocoes});
+      }}
+    >
+      <TextField
+        value={nome}
+        onChange={(event) => {
+          setNome(event.target.value);
         }}
-      >
-        <TextField
-        value ={nome}
-        onChange={(event)=>{
-            let tmpNome = event.target.value;
-            setNome(event.target.value);
-            if (tmpNome.lenght>=3){
-                tmpNome = tmpNome.substr(0,3);
-            }
-            setNome(tmpNome);
+        id="nome"
+        label="Nome"
+        variant="outlined"
+        fullWidth
+        margin="dense"
+      />
+      <TextField
+        value={sobrenome}
+        onChange={(event) => {
+          setSobrenome(event.target.value);
         }}
-          id="nome"
-          label="Nome"
-          variant="outlined"
-          fullWidth
-          margin="dense"
-        />
-        <TextField
-            value={sobrenome}
-            onChange={(event)=>{
-            setSobrenome(event.target.value);
-            if (sobrenome.lenght>3){
-                setSobrenome(sobrenome.substr(0,3));
-            }
+        id="sobrenome"
+        label="Sobrenome"
+        variant="outlined"
+        fullWidth
+        margin="dense"
+      />
+      <TextField
+        value={cpf}
+        onChange={(event) => {
+          setCpf(event.target.value);
         }}
-          id="sobrenome"
-          label="Sobrenome"
-          variant="outlined"
-          fullWidth
-          margin="dense"
-        />
-        <TextField
-          value={cpf} 
-          onChange={(event)=>{
-            setCpf(event.target.value);
-            if (cpf.lenght=11){
-                setSobrenome(cpf.substr(0,3));
-            }
-        }}
-          id="cpf"
-          label="CPF"
-          variant="outlined"
-          fullWidth
-          margin="dense"
-        />
 
-        <FormControlLabel
-          control={<Switch defaultChecked name="checkedB" color="primary" />}
-          label="Promoções"
-        />
+        onBlur={(event) => {
+            const ehValido = validarCPF(cpf);
+            setErros({cpf:{ehValido}})
+        }}
+        id="cpf"
+        error={!erros.cpf.valido}
+        helperText={erros.cpf.texto}
+        label="CPF"
+        variant="outlined"
+        fullWidth
+        margin="dense"
+      />
 
-        <FormControlLabel
-          control={<Switch defaultChecked name="checkedB" color="primary" />}
-          label="Newsletter"
-        />
+      <FormControlLabel
+        label="Promocoes"
+        control={
+          <Switch
+            checked={promocoes}
+            onChange={(event) => {
+              setPromocoes(event.target.checked);
+            }}
+            
+            name="promocoes"
+            color="primary"
+          />
+        }
+      />
 
-        <Button variant="contained" color="primary">
-          Cadastrar
-        </Button>
-      </form>
-    </>
+      <FormControlLabel
+        label="Newsletter"
+        control={
+          <Switch
+            checked={newsletter}
+            onChange={(event) => {
+              setNewsletter(event.target.checked);
+            }}
+           
+            name="newsletter"
+            color="primary"
+          />
+        }
+      />
+
+      <Button type="submit" variant="contained" color="primary">
+        Cadastrar
+      </Button>
+    </form>
   );
 }
 
